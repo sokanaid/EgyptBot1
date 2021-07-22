@@ -9,3 +9,4 @@ class User(StatesGroup):
     Entered_room_number = State()
     Chose_date = State()
     Entered_number_of_people = State()
+    Sent_form = State()
