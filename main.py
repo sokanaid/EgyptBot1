@@ -44,6 +44,13 @@ async def send_name(message: types.Message, state: FSMContext):
     await states.User.next()
 
 
+# Предложение ввести ФИО
+@dp.message_handler(text=keyboards.Edit_form_button.text, state=states.User.Sent_form)
+async def send_name1(message: types.Message, state: FSMContext):
+    await bot.send_message(message.from_user.id, "Введите ФИО")
+    await states.User.Entered_name.set()
+
+
 # Предложение ввести отель
 @dp.message_handler(state=states.User.Entered_name)
 async def send_hotel_name(message: types.Message, state: FSMContext):
@@ -121,14 +128,14 @@ async def send_form(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(text=keyboards.Sent_form_button.text, state=states.User.Sent_form)
-async def sended_form(message: types.Message, state: FSMContext):
+async def sent_form(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         sheet = google_sheets.find_sheet(data['date'].strftime("%m.%Y"))
         google_sheets.write_data(message.from_user.id, data['name'], data['hotel'], data['room_number'],
-                                 data['date'].strftime("%d.%m.%Y"), data['number_of_adults', data['number_of_children']]
+                                 data['date'].strftime("%d.%m.%Y"), data['number_of_adults'], data['number_of_children']
                                  , sheet)
     await bot.send_message(message.from_user.id, "Ваша заявка отправлена. За день до экскурсии мы попросим" +
-                           " вас подтвердить ее.")
+                           " вас подтвердить ее.", reply_markup=keyboards.New_form_buttons)
     await states.User.next()
 
 
