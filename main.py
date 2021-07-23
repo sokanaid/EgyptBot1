@@ -9,6 +9,8 @@ import keyboards
 import states
 import google_sheets
 import checking
+import datetime
+
 bot = Bot(config.Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
@@ -63,11 +65,10 @@ async def send_room_number(message: types.Message, state: FSMContext):
 # Предложение ввести дату экскурсии
 @dp.message_handler(state=states.User.Entered_room_number)
 async def send_date(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, "Введите дату экскурсии")
-    await message.answer("Please select a date: ", reply_markup=await SimpleCalendar().start_calendar())
-    await states.User.next()
     async with state.proxy() as data:
         data['room_number'] = message.text
+    await message.answer("Введите дату экскурсии", reply_markup=await SimpleCalendar().start_calendar())
+    await states.User.next()
 
 
 # Предложение ввести колличество детей
@@ -78,14 +79,23 @@ async def process_simple_calendar(callback_query: CallbackQuery, callback_data: 
         await callback_query.message.answer(
             f'Вы выбрали {date.strftime("%d.%m.%Y")}'
         )
+        now = datetime.datetime.today()
+        if now >= date:
+            await callback_query.message.answer('Введенная дата некорректна. Выберите другую.',
+                                                reply_markup=await SimpleCalendar().start_calendar())
+            return
         async with state.proxy() as data:
             data['date'] = date
         await callback_query.message.answer('Введите число детей не достигших 14 лет')
         await states.User.next()
 
+
 # Предложение ввести колличество взрослых
 @dp.message_handler(state=states.User.Entered_number_of_children)
 async def send_adults(message: types.Message, state: FSMContext):
+    if not checking.is_number_of_people(message.text):
+        await bot.send_message(message.from_user.id, 'Введенное значение не корректно. Введите число еще раз')
+        return
     async with state.proxy() as data:
         data['number_of_children'] = message.text
     await bot.send_message(message.from_user.id, 'Введите число взрослых ')
@@ -95,12 +105,16 @@ async def send_adults(message: types.Message, state: FSMContext):
 # Подтвердить отправку заявку
 @dp.message_handler(state=states.User.Entered_number_of_adults)
 async def send_form(message: types.Message, state: FSMContext):
+    if not checking.is_number_of_people(message.text):
+        await bot.send_message(message.from_user.id, 'Введенное значение не корректно. Введите число еще раз')
+        return
     async with state.proxy() as data:
         data['number_of_adults'] = message.text
     async with state.proxy() as data:
         await bot.send_message(message.from_user.id, "Подтвердите заявку: \n ФИО:" + data['name'] +
                                "\n Отель:" + data['hotel'] + "\n Номер комнаты:" + data['room_number'] +
-                               "\n Колличество людей:" + data['number_of_people'] + "\n Дата:" +
+                               "\n Число взрослых:" + data['number_of_adults'] + "\n Число детей младше 14 лет:"
+                               + data['number_of_children'] + "\n Дата:" +
                                data['date'].strftime("%d.%m.%Y"),
                                reply_markup=keyboards.Sent_form_buttons)
     await states.User.next()
@@ -111,7 +125,8 @@ async def sended_form(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         sheet = google_sheets.find_sheet(data['date'].strftime("%m.%Y"))
         google_sheets.write_data(message.from_user.id, data['name'], data['hotel'], data['room_number'],
-                                 data['date'].strftime("%d.%m.%Y"), data['number_of_people'], sheet)
+                                 data['date'].strftime("%d.%m.%Y"), data['number_of_adults', data['number_of_children']]
+                                 , sheet)
     await bot.send_message(message.from_user.id, "Ваша заявка отправлена. За день до экскурсии мы попросим" +
                            " вас подтвердить ее.")
     await states.User.next()
