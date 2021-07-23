@@ -3,7 +3,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram_calendar import simple_cal_callback, SimpleCalendar
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove, ReplyKeyboardMarkup
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove, ReplyKeyboardMarkup, ContentType
 import config
 import keyboards
 import states
@@ -40,14 +40,14 @@ async def start_survey(message: types.Message, state: FSMContext):
 # Предложение ввести ФИО
 @dp.message_handler(text=keyboards.Enter_data_button.text, state=states.User.Started_survey)
 async def send_name(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, "Введите ФИО")
+    await bot.send_message(message.from_user.id, "Введите ФИО", reply_markup=types.ReplyKeyboardRemove())
     await states.User.next()
 
 
 # Предложение ввести ФИО
 @dp.message_handler(text=keyboards.Edit_form_button.text, state=states.User.Sent_form)
 async def send_name1(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, "Введите ФИО")
+    await bot.send_message(message.from_user.id, "Введите ФИО", reply_markup=types.ReplyKeyboardRemove())
     await states.User.Entered_name.set()
 
 
@@ -69,12 +69,25 @@ async def send_room_number(message: types.Message, state: FSMContext):
         data['hotel'] = message.text
 
 
-# Предложение ввести дату экскурсии
+# Предложение ввести номер телефона
 @dp.message_handler(state=states.User.Entered_room_number)
-async def send_date(message: types.Message, state: FSMContext):
+async def send_phone_number(message: types.Message, state: FSMContext):
+    await bot.send_message(message.from_user.id, "Нажмите на кнопку для ввода номера телефона."
+                           , reply_markup=keyboards.Send_phone_number_buttons)
+    await states.User.next()
     async with state.proxy() as data:
         data['room_number'] = message.text
-    await message.answer("Введите дату экскурсии", reply_markup=await SimpleCalendar().start_calendar())
+
+
+# Предложение ввести дату экскурсии
+@dp.message_handler(content_types=ContentType.CONTACT, state=states.User.Entered_phone_number)
+async def send_date(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        #print( message.contact.phone_number)
+        data['phone_number'] = message.contact.phone_number
+
+    await message.answer("Введите дату экскурсии", reply_markup=types.ReplyKeyboardRemove())
+    await message.answer("-", reply_markup=await SimpleCalendar().start_calendar())
     await states.User.next()
 
 
@@ -120,6 +133,7 @@ async def send_form(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         await bot.send_message(message.from_user.id, "Подтвердите заявку: \n ФИО:" + data['name'] +
                                "\n Отель:" + data['hotel'] + "\n Номер комнаты:" + data['room_number'] +
+                               "\n Номер телефона:" + data['phone_number'] +
                                "\n Число взрослых:" + data['number_of_adults'] + "\n Число детей младше 14 лет:"
                                + data['number_of_children'] + "\n Дата:" +
                                data['date'].strftime("%d.%m.%Y"),
@@ -132,10 +146,12 @@ async def sent_form(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         sheet = google_sheets.find_sheet(data['date'].strftime("%m.%Y"))
         google_sheets.write_data(message.from_user.id, data['name'], data['hotel'], data['room_number'],
-                                 data['date'].strftime("%d.%m.%Y"), data['number_of_adults'], data['number_of_children']
-                                 , sheet)
+                                 data['date'].strftime("%d.%m.%Y"), data['number_of_adults'],
+                                 data['number_of_children'],
+                                 data['phone_number'], sheet)
     await bot.send_message(message.from_user.id, "Ваша заявка отправлена. За день до экскурсии мы попросим" +
-                           " вас подтвердить ее.", reply_markup=keyboards.New_form_buttons)
+                           " вас подтвердить ее. В случае изменений менеджер свяжется"
+                           " с вами по указанному номеру через Telegram", reply_markup=keyboards.New_form_buttons)
     await states.User.next()
 
 

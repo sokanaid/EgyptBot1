@@ -17,3 +17,6 @@ Sent_form_buttons.add(Edit_form_button)
 New_form_buttons = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
 New_form_button = KeyboardButton("Создать новую заявку")
 New_form_buttons.add(New_form_button)
+
+Send_phone_number_buttons = ReplyKeyboardMarkup(resize_keyboard=True).add(
+    KeyboardButton('Отправить свой контакт ☎️', request_contact=True))
