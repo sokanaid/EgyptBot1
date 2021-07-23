@@ -8,7 +8,7 @@ import config
 import keyboards
 import states
 import google_sheets
-
+import checking
 bot = Bot(config.Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
@@ -70,7 +70,7 @@ async def send_date(message: types.Message, state: FSMContext):
         data['room_number'] = message.text
 
 
-# Предложение ввести колличество людей
+# Предложение ввести колличество детей
 @dp.callback_query_handler(simple_cal_callback.filter(), state=states.User.Chose_date)
 async def process_simple_calendar(callback_query: CallbackQuery, callback_data: dict, state: FSMContext):
     selected, date = await SimpleCalendar().process_selection(callback_query, callback_data)
@@ -80,27 +80,38 @@ async def process_simple_calendar(callback_query: CallbackQuery, callback_data: 
         )
         async with state.proxy() as data:
             data['date'] = date
-        await callback_query.message.answer('Введите колличество людей')
+        await callback_query.message.answer('Введите число детей не достигших 14 лет')
         await states.User.next()
+
+# Предложение ввести колличество взрослых
+@dp.message_handler(state=states.User.Entered_number_of_children)
+async def send_adults(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['number_of_children'] = message.text
+    await bot.send_message(message.from_user.id, 'Введите число взрослых ')
+    await states.User.next()
 
 
 # Подтвердить отправку заявку
-@dp.message_handler(state=states.User.Entered_number_of_people)
+@dp.message_handler(state=states.User.Entered_number_of_adults)
 async def send_form(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        data['number_of_people'] = message.text
+        data['number_of_adults'] = message.text
     async with state.proxy() as data:
         await bot.send_message(message.from_user.id, "Подтвердите заявку: \n ФИО:" + data['name'] +
                                "\n Отель:" + data['hotel'] + "\n Номер комнаты:" + data['room_number'] +
-                               "\n Колличество людей:" + data['number_of_people']+ "\n Дата:" + data['date'].strftime("%d.%m.%Y") ,
+                               "\n Колличество людей:" + data['number_of_people'] + "\n Дата:" +
+                               data['date'].strftime("%d.%m.%Y"),
                                reply_markup=keyboards.Sent_form_buttons)
     await states.User.next()
 
 
 @dp.message_handler(text=keyboards.Sent_form_button.text, state=states.User.Sent_form)
-async def send_people_number(message: types.Message, state: FSMContext):
+async def sended_form(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         sheet = google_sheets.find_sheet(data['date'].strftime("%m.%Y"))
+        google_sheets.write_data(message.from_user.id, data['name'], data['hotel'], data['room_number'],
+                                 data['date'].strftime("%d.%m.%Y"), data['number_of_people'], sheet)
     await bot.send_message(message.from_user.id, "Ваша заявка отправлена. За день до экскурсии мы попросим" +
                            " вас подтвердить ее.")
     await states.User.next()

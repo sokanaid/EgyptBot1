@@ -8,5 +8,6 @@ class User(StatesGroup):
     Entered_hotel_name = State()
     Entered_room_number = State()
     Chose_date = State()
-    Entered_number_of_people = State()
+    Entered_number_of_children = State()
+    Entered_number_of_adults = State()
     Sent_form = State()
