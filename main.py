@@ -37,6 +37,18 @@ async def start_survey(message: types.Message, state: FSMContext):
     await states.User.next()
 
 
+# Предложение заполнить данные
+@dp.message_handler(text=keyboards.New_form_button.text, state=states.User.Start_again)
+async def start_new_survey(message: types.Message, state: FSMContext):
+    await bot.send_message(message.from_user.id, "Для бронирования Для бронирования на морскую прогулку нужно"
+                                                 " сделать простые шаги, мы поможем тебе в этом:"
+                                                 " \n- укажите свое ФИО,"
+                                                 " \n- отель, \n- номер комнаты,"
+                                                 " \n- желаемую дату поездки, \n- количество человек."
+                           , reply_markup=keyboards.Enter_data_buttons)
+    await states.User.Started_survey.set()
+
+
 # Предложение ввести ФИО
 @dp.message_handler(text=keyboards.Enter_data_button.text, state=states.User.Started_survey)
 async def send_name(message: types.Message, state: FSMContext):
@@ -83,7 +95,7 @@ async def send_phone_number(message: types.Message, state: FSMContext):
 @dp.message_handler(content_types=ContentType.CONTACT, state=states.User.Entered_phone_number)
 async def send_date(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        #print( message.contact.phone_number)
+        # print( message.contact.phone_number)
         data['phone_number'] = message.contact.phone_number
 
     await message.answer("Введите дату экскурсии", reply_markup=types.ReplyKeyboardRemove())
