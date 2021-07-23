@@ -7,6 +7,7 @@ from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove, ReplyKeyb
 import config
 import keyboards
 import states
+import google_sheets
 
 bot = Bot(config.Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
@@ -78,7 +79,7 @@ async def process_simple_calendar(callback_query: CallbackQuery, callback_data: 
             f'Вы выбрали {date.strftime("%d.%m.%Y")}'
         )
         async with state.proxy() as data:
-            data['date'] = date.strftime("%d.%m.%Y")
+            data['date'] = date
         await callback_query.message.answer('Введите колличество людей')
         await states.User.next()
 
@@ -91,14 +92,15 @@ async def send_form(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         await bot.send_message(message.from_user.id, "Подтвердите заявку: \n ФИО:" + data['name'] +
                                "\n Отель:" + data['hotel'] + "\n Номер комнаты:" + data['room_number'] +
-                               "\n Колличество людей:" + data['number_of_people'] + "\n Дата:" + data['date'],
+                               "\n Колличество людей:" + data['number_of_people']+ "\n Дата:" + data['date'].strftime("%d.%m.%Y") ,
                                reply_markup=keyboards.Sent_form_buttons)
     await states.User.next()
 
 
 @dp.message_handler(text=keyboards.Sent_form_button.text, state=states.User.Sent_form)
 async def send_people_number(message: types.Message, state: FSMContext):
-
+    async with state.proxy() as data:
+        sheet = google_sheets.find_sheet(data['date'].strftime("%m.%Y"))
     await bot.send_message(message.from_user.id, "Ваша заявка отправлена. За день до экскурсии мы попросим" +
                            " вас подтвердить ее.")
     await states.User.next()
