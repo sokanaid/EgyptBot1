@@ -1,4 +1,5 @@
 from aiogram import Bot, Dispatcher, executor, types
+import threading
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
@@ -10,6 +11,8 @@ import states
 import google_sheets
 import checking
 import datetime
+
+import timer_agree
 
 bot = Bot(config.Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
@@ -118,7 +121,7 @@ async def process_simple_calendar(callback_query: CallbackQuery, callback_data: 
             return
         async with state.proxy() as data:
             data['date'] = date
-        await callback_query.message.answer('Введите число детей не достигших 14 лет')
+        await callback_query.message.answer('Введите число детей, недостигших 14 лет')
         await states.User.next()
 
 
@@ -168,4 +171,7 @@ async def sent_form(message: types.Message, state: FSMContext):
 
 
 if __name__ == '__main__':
+    timer = threading.Timer(100, timer_agree.user_agreed(),
+                            args=None, kwargs=None)
+    timer.start()
     executor.start_polling(dp, skip_updates=True)

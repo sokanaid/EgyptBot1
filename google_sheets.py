@@ -29,3 +29,5 @@ def find_sheet(name):
 
 def write_data(dialog_id, name, hotel, room_number, date, number_of_adults, number_of_children, phone_number, sheet):
     sheet.append_row([dialog_id, date, name, hotel, room_number, number_of_adults, number_of_children, phone_number])
+
+

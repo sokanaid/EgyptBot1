@@ -18,5 +18,10 @@ New_form_buttons = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=T
 New_form_button = KeyboardButton("Создать новую заявку")
 New_form_buttons.add(New_form_button)
 
+Confirm_buttons = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+Confirm_button1 = KeyboardButton("Подтверждаю заявку на экскурсию")
+Confirm_button2 = KeyboardButton("Отменить заявку на экскурсию")
+Confirm_buttons.add(Confirm_button1).add(Confirm_button2)
+
 Send_phone_number_buttons = ReplyKeyboardMarkup(resize_keyboard=True).add(
     KeyboardButton('Отправить свой контакт ☎️', request_contact=True))
