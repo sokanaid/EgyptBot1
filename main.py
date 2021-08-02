@@ -169,7 +169,6 @@ async def sent_form(message: types.Message, state: FSMContext):
                            " с вами по указанному номеру через Telegram", reply_markup=keyboards.New_form_buttons)
     await states.User.next()
 
-
 if __name__ == '__main__':
     timer = threading.Timer(100, timer_agree.user_agreed(),
                             args=None, kwargs=None)

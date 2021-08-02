@@ -4,9 +4,12 @@ import google_sheets
 import checking
 import datetime
 import main
-import  keyboards
+import keyboards
+from threading import Thread
 
-def user_agreed():
+
+# Оповещение о подтверждении экскурсии
+async def user_agreed():
     tomorrow = datetime.datetime.today() + datetime.timedelta(days=1)
     month_str = tomorrow.strftime("%m.%Y")
     sheet = google_sheets.find_sheet(month_str)
@@ -17,5 +20,5 @@ def user_agreed():
         id_and_rows[sheet.cell(cell.row, 1).value] = cell.row
 
     for id in id_and_rows.keys():
-        main.bot.send_message(id, 'У вас забронирована экскурсия на корабле. Подтвердите ее',
-                              reply_markup=keyboards.Confirm_buttons)
+        await main.bot.send_message(int(id), 'У вас забронирована экскурсия на корабле. Подтвердите ее',
+                                    reply_markup=keyboards.Confirm_buttons)
