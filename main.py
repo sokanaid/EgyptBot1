@@ -18,6 +18,9 @@ import timer_agree
 
 bot = Bot(config.Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
+loop = asyncio.get_event_loop()
+# Промежуток времени для вызовов подтверждения экскурсий.
+delay = 10.0
 
 
 # Начало работы приветствие
@@ -39,7 +42,7 @@ async def start_survey(message: types.Message, state: FSMContext):
                                                  " \n- отель, \n- номер комнаты,"
                                                  " \n- желаемую дату поездки, \n- количество человек."
                            , reply_markup=keyboards.Enter_data_buttons)
-    await states.User.next()
+    await states.User.Started_survey.set()
 
 
 # Предложение заполнить данные
@@ -58,7 +61,7 @@ async def start_new_survey(message: types.Message, state: FSMContext):
 @dp.message_handler(text=keyboards.Enter_data_button.text, state=states.User.Started_survey)
 async def send_name(message: types.Message, state: FSMContext):
     await bot.send_message(message.from_user.id, "Введите ФИО", reply_markup=types.ReplyKeyboardRemove())
-    await states.User.next()
+    await states.User.Entered_name.set()
 
 
 # Предложение ввести ФИО
@@ -71,8 +74,8 @@ async def send_name1(message: types.Message, state: FSMContext):
 # Предложение ввести отель
 @dp.message_handler(state=states.User.Entered_name)
 async def send_hotel_name(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, "Введите название отеля")
-    await states.User.next()
+    await bot.send_message(message.from_user.id, "Введите название отеля", reply_markup=types.ReplyKeyboardRemove())
+    await states.User.Entered_hotel_name.set()
     async with state.proxy() as data:
         data['name'] = message.text
 
@@ -80,8 +83,8 @@ async def send_hotel_name(message: types.Message, state: FSMContext):
 # Предложение ввести номер комнаты
 @dp.message_handler(state=states.User.Entered_hotel_name)
 async def send_room_number(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, "Введите номер комнаты")
-    await states.User.next()
+    await bot.send_message(message.from_user.id, "Введите номер комнаты", reply_markup=types.ReplyKeyboardRemove())
+    await states.User.Entered_room_number.set()
     async with state.proxy() as data:
         data['hotel'] = message.text
 
@@ -91,7 +94,7 @@ async def send_room_number(message: types.Message, state: FSMContext):
 async def send_phone_number(message: types.Message, state: FSMContext):
     await bot.send_message(message.from_user.id, "Нажмите на кнопку для ввода номера телефона."
                            , reply_markup=keyboards.Send_phone_number_buttons)
-    await states.User.next()
+    await states.User.Entered_phone_number.set()
     async with state.proxy() as data:
         data['room_number'] = message.text
 
@@ -105,7 +108,7 @@ async def send_date(message: types.Message, state: FSMContext):
 
     await message.answer("Введите дату экскурсии", reply_markup=types.ReplyKeyboardRemove())
     await message.answer("-", reply_markup=await SimpleCalendar().start_calendar())
-    await states.User.next()
+    await states.User.Chose_date.set()
 
 
 # Предложение ввести колличество детей
@@ -124,26 +127,28 @@ async def process_simple_calendar(callback_query: CallbackQuery, callback_data: 
         async with state.proxy() as data:
             data['date'] = date
         await callback_query.message.answer('Введите число детей, недостигших 14 лет')
-        await states.User.next()
+        await states.User.Entered_number_of_children.set()
 
 
 # Предложение ввести колличество взрослых
 @dp.message_handler(state=states.User.Entered_number_of_children)
 async def send_adults(message: types.Message, state: FSMContext):
     if not checking.is_number_of_people(message.text):
-        await bot.send_message(message.from_user.id, 'Введенное значение не корректно. Введите число еще раз')
+        await bot.send_message(message.from_user.id, 'Введенное значение не корректно. Введите число еще раз',
+                               reply_markup=types.ReplyKeyboardRemove())
         return
     async with state.proxy() as data:
         data['number_of_children'] = message.text
-    await bot.send_message(message.from_user.id, 'Введите число взрослых ')
-    await states.User.next()
+    await bot.send_message(message.from_user.id, 'Введите число взрослых ', reply_markup=types.ReplyKeyboardRemove())
+    await states.User.Entered_number_of_adults.set()
 
 
 # Подтвердить отправку заявку
 @dp.message_handler(state=states.User.Entered_number_of_adults)
 async def send_form(message: types.Message, state: FSMContext):
     if not checking.is_number_of_people(message.text):
-        await bot.send_message(message.from_user.id, 'Введенное значение не корректно. Введите число еще раз')
+        await bot.send_message(message.from_user.id, 'Введенное значение не корректно. Введите число еще раз',
+                               reply_markup=types.ReplyKeyboardRemove())
         return
     async with state.proxy() as data:
         data['number_of_adults'] = message.text
@@ -155,7 +160,7 @@ async def send_form(message: types.Message, state: FSMContext):
                                + data['number_of_children'] + "\n Дата:" +
                                data['date'].strftime("%d.%m.%Y"),
                                reply_markup=keyboards.Sent_form_buttons)
-    await states.User.next()
+    await states.User.Sent_form.set()
 
 
 @dp.message_handler(text=keyboards.Sent_form_button.text, state=states.User.Sent_form)
@@ -169,11 +174,37 @@ async def sent_form(message: types.Message, state: FSMContext):
     await bot.send_message(message.from_user.id, "Ваша заявка отправлена. За день до экскурсии мы попросим" +
                            " вас подтвердить ее. В случае изменений менеджер свяжется"
                            " с вами по указанному номеру через Telegram", reply_markup=keyboards.New_form_buttons)
-    await states.User.next()
+    await states.User.Start_again.set()
+
+
+@dp.message_handler(text=keyboards.Confirm_button1.text, state="*")
+async def confirm(message: types.Message, state: FSMContext):
+    async with timer_agree.id_and_rows as data:
+        if message.from_user.id in data:
+            timer_agree.confirm_in_googlesheets(message.from_user.id, "+")
+            await bot.send_message(message.from_user.id, "Ваша экскурсия успешно подтверждена. "
+                                                         "Наш свяжется с вами для сообщения информации о поездке",
+                                   reply_markup=types.ReplyKeyboardRemove())
+        else:
+            await bot.send_message(message.from_user.id, "Не удалось подтвердить заявку."
+                                                         " Истекло время подтверждения",
+                                   reply_markup=types.ReplyKeyboardRemove())
+    await states.User.Start_again.set()
+    await start_new_survey(message, state)
+
+
+@dp.message_handler(text=keyboards.Confirm_button2.text, state="*")
+async def cancel(message: types.Message, state: FSMContext):
+    async with timer_agree.id_and_rows as data:
+        if message.from_user.id in data:
+            timer_agree.confirm_in_googlesheets(message.from_user.id, "-")
+        await bot.send_message(message.from_user.id, "Экскурсия отменена",
+                               reply_markup=types.ReplyKeyboardRemove())
+    await states.User.Start_again.set()
+    await start_new_survey(message, state)
+
 
 if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-    delay = 100.0
     when_to_call = loop.time() + delay  # delay -- промежуток времени в секундах.
     loop.call_at(when_to_call, timer_agree.my_callback)
     executor.start_polling(dp, skip_updates=True)

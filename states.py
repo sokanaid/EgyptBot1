@@ -13,3 +13,4 @@ class User(StatesGroup):
     Entered_number_of_adults = State()
     Sent_form = State()
     Start_again = State()
+    Сonfirmation = State()
