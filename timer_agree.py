@@ -1,3 +1,4 @@
+import asyncio
 import time
 
 import google_sheets
@@ -22,3 +23,9 @@ async def user_agreed():
     for id in id_and_rows.keys():
         await main.bot.send_message(int(id), 'У вас забронирована экскурсия на корабле. Подтвердите ее',
                                     reply_markup=keyboards.Confirm_buttons)
+    when_to_call = main.loop.time() + main.delay  # delay -- промежуток времени в секундах.
+    main.loop.call_at(when_to_call, my_callback)
+
+
+def my_callback():
+    asyncio.ensure_future(user_agreed())

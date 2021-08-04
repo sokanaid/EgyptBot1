@@ -1,3 +1,5 @@
+import asyncio
+
 from aiogram import Bot, Dispatcher, executor, types
 import threading
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -170,7 +172,8 @@ async def sent_form(message: types.Message, state: FSMContext):
     await states.User.next()
 
 if __name__ == '__main__':
-    timer = threading.Timer(100, timer_agree.user_agreed(),
-                            args=None, kwargs=None)
-    timer.start()
+    loop = asyncio.get_event_loop()
+    delay = 100.0
+    when_to_call = loop.time() + delay  # delay -- промежуток времени в секундах.
+    loop.call_at(when_to_call, timer_agree.my_callback)
     executor.start_polling(dp, skip_updates=True)
