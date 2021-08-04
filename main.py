@@ -20,7 +20,7 @@ bot = Bot(config.Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 loop = asyncio.get_event_loop()
 # Промежуток времени для вызовов подтверждения экскурсий.
-delay = 10.0
+delay = 30.0  # 8.64*10**7
 
 
 # Начало работы приветствие
@@ -34,9 +34,9 @@ async def start_message(message: types.Message, state: FSMContext):
 
 
 # Предложение заполнить данные
-@dp.message_handler(text=keyboards.Next_step_button.text, state=states.User.Started_chat)
-async def start_survey(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, "Для бронирования Для бронирования на морскую прогулку нужно"
+@dp.message_handler(text=keyboards.New_form_button.text, state=states.User.Start_again)
+async def start_new_survey(message: types.Message, state: FSMContext):
+    await bot.send_message(message.from_user.id, "Для бронирования на морскую прогулку нужно"
                                                  " сделать простые шаги, мы поможем тебе в этом:"
                                                  " \n- укажите свое ФИО,"
                                                  " \n- отель, \n- номер комнаты,"
@@ -45,10 +45,38 @@ async def start_survey(message: types.Message, state: FSMContext):
     await states.User.Started_survey.set()
 
 
+# Подтверждение заявки на экскурсию (за день до экскурссии)
+@dp.message_handler(text=keyboards.Confirm_button1.text, state="*")
+async def confirm(message: types.Message, state: FSMContext):
+    if str(message.from_user.id) in timer_agree.id_and_rows:
+        timer_agree.confirm_in_googlesheets(message.from_user.id, "yes")
+        await bot.send_message(message.from_user.id, "Ваша экскурсия успешно подтверждена. "
+                                                     "Наш свяжется с вами для сообщения информации о поездке",
+                               reply_markup=types.ReplyKeyboardRemove())
+    else:
+        await bot.send_message(message.from_user.id, "Не удалось подтвердить заявку."
+                                                     " Истекло время подтверждения",
+                               reply_markup=types.ReplyKeyboardRemove())
+
+    await states.User.Start_again.set()
+    await start_new_survey(message, state)
+
+
+# Отмена заявки на экскурсию (за день до экскурссии)
+@dp.message_handler(text=keyboards.Confirm_button2.text, state="*")
+async def cancel(message: types.Message, state: FSMContext):
+    if str(message.from_user.id) in timer_agree.id_and_rows:
+        timer_agree.confirm_in_googlesheets(message.from_user.id, "no")
+    await bot.send_message(message.from_user.id, "Экскурсия отменена",
+                           reply_markup=types.ReplyKeyboardRemove())
+    await states.User.Start_again.set()
+    await start_new_survey(message, state)
+
+
 # Предложение заполнить данные
-@dp.message_handler(text=keyboards.New_form_button.text, state=states.User.Start_again)
-async def start_new_survey(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, "Для бронирования Для бронирования на морскую прогулку нужно"
+@dp.message_handler(text=keyboards.Next_step_button.text, state=states.User.Started_chat)
+async def start_survey(message: types.Message, state: FSMContext):
+    await bot.send_message(message.from_user.id, "Для бронирования на морскую прогулку нужно"
                                                  " сделать простые шаги, мы поможем тебе в этом:"
                                                  " \n- укажите свое ФИО,"
                                                  " \n- отель, \n- номер комнаты,"
@@ -175,33 +203,6 @@ async def sent_form(message: types.Message, state: FSMContext):
                            " вас подтвердить ее. В случае изменений менеджер свяжется"
                            " с вами по указанному номеру через Telegram", reply_markup=keyboards.New_form_buttons)
     await states.User.Start_again.set()
-
-
-@dp.message_handler(text=keyboards.Confirm_button1.text, state="*")
-async def confirm(message: types.Message, state: FSMContext):
-    async with timer_agree.id_and_rows as data:
-        if message.from_user.id in data:
-            timer_agree.confirm_in_googlesheets(message.from_user.id, "+")
-            await bot.send_message(message.from_user.id, "Ваша экскурсия успешно подтверждена. "
-                                                         "Наш свяжется с вами для сообщения информации о поездке",
-                                   reply_markup=types.ReplyKeyboardRemove())
-        else:
-            await bot.send_message(message.from_user.id, "Не удалось подтвердить заявку."
-                                                         " Истекло время подтверждения",
-                                   reply_markup=types.ReplyKeyboardRemove())
-    await states.User.Start_again.set()
-    await start_new_survey(message, state)
-
-
-@dp.message_handler(text=keyboards.Confirm_button2.text, state="*")
-async def cancel(message: types.Message, state: FSMContext):
-    async with timer_agree.id_and_rows as data:
-        if message.from_user.id in data:
-            timer_agree.confirm_in_googlesheets(message.from_user.id, "-")
-        await bot.send_message(message.from_user.id, "Экскурсия отменена",
-                               reply_markup=types.ReplyKeyboardRemove())
-    await states.User.Start_again.set()
-    await start_new_survey(message, state)
 
 
 if __name__ == '__main__':

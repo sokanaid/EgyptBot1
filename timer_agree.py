@@ -40,6 +40,6 @@ def my_callback():
 
 
 def confirm_in_googlesheets(id, text):
-    row = id_and_rows(id)
+    row = id_and_rows[str(id)]
     sheet = id_and_rows[0]
     sheet.update_cell(row, 9, text)
