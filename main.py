@@ -58,8 +58,10 @@ async def confirm(message: types.Message, state: FSMContext):
                                                      " Истекло время подтверждения",
                                reply_markup=types.ReplyKeyboardRemove())
 
+    await bot.send_message(message.from_user.id, "Создайте новую заявку на экскурсию",
+                           reply_markup=keyboards.New_form_buttons)
     await states.User.Start_again.set()
-    await start_new_survey(message, state)
+    # await start_new_survey(message, state)
 
 
 # Отмена заявки на экскурсию (за день до экскурссии)
@@ -69,11 +71,15 @@ async def cancel(message: types.Message, state: FSMContext):
         timer_agree.confirm_in_googlesheets(message.from_user.id, "no")
     await bot.send_message(message.from_user.id, "Экскурсия отменена",
                            reply_markup=types.ReplyKeyboardRemove())
+    await bot.send_message(message.from_user.id, "Создайте новую заявку на экскурсию",
+                           reply_markup=keyboards.New_form_buttons)
     await states.User.Start_again.set()
-    await start_new_survey(message, state)
+
+    # await start_new_survey(message, state)
+
+    # Предложение заполнить данные
 
 
-# Предложение заполнить данные
 @dp.message_handler(text=keyboards.Next_step_button.text, state=states.User.Started_chat)
 async def start_survey(message: types.Message, state: FSMContext):
     await bot.send_message(message.from_user.id, "Для бронирования на морскую прогулку нужно"
@@ -86,6 +92,8 @@ async def start_survey(message: types.Message, state: FSMContext):
 
 
 # Предложение ввести ФИО
+
+
 @dp.message_handler(text=keyboards.Enter_data_button.text, state=states.User.Started_survey)
 async def send_name(message: types.Message, state: FSMContext):
     await bot.send_message(message.from_user.id, "Введите ФИО", reply_markup=types.ReplyKeyboardRemove())
@@ -167,7 +175,8 @@ async def send_adults(message: types.Message, state: FSMContext):
         return
     async with state.proxy() as data:
         data['number_of_children'] = message.text
-    await bot.send_message(message.from_user.id, 'Введите число взрослых ', reply_markup=types.ReplyKeyboardRemove())
+    await bot.send_message(message.from_user.id, 'Введите число взрослых ',
+                           reply_markup=types.ReplyKeyboardRemove())
     await states.User.Entered_number_of_adults.set()
 
 

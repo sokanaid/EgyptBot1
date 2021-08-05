@@ -1,8 +1,13 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton,InlineKeyboardMarkup,InlineKeyboardButton
 
 Next_step_buttons = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
 Next_step_button = KeyboardButton("Далее")
 Next_step_buttons.add(Next_step_button)
+
+'''Next_step_buttons = InlineKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+Next_step_button = InlineKeyboardButton(text='Далее', callback_data='Далее')
+Next_step_buttons.add(Next_step_button)'''
 
 Enter_data_buttons = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
 Enter_data_button = KeyboardButton("Ввести данные")
