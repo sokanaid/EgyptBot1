@@ -27,7 +27,7 @@ delay = 30.0  # 8.64*10**7
 @dp.message_handler(commands=['start'], state='*')
 async def start_message(message: types.Message, state: FSMContext):
     await bot.send_message(message.from_user.id, "Привет!")
-    await bot.send_message(message.from_user.id, "Я бот помошник по бронированию морской прогулки в красное море "
+    await bot.send_message(message.from_user.id, "Я бот помощник по бронированию морской прогулки в красное море "
                                                  "от команды \"Utopia Team\"",
                            reply_markup=keyboards.Next_step_buttons)
     await states.User.Started_chat.set()
