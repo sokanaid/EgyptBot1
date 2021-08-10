@@ -26,7 +26,6 @@ delay = 8.64 * 10 ** 7
 # Начало работы приветствие
 @dp.message_handler(commands=['start'], state='*')
 async def start_message(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, "Привет!")
     await bot.send_message(message.from_user.id,
                            "Привет," + message.from_user.first_name + ". Я бот-помощник команды \"Utopia Team\""
                                                                       "Готов помочь тебе забронировать морскую "
