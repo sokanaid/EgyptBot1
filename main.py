@@ -166,7 +166,7 @@ async def process_simple_calendar(callback_query: CallbackQuery, callback_data: 
             return
         async with state.proxy() as data:
             data['date'] = date
-        await callback_query.message.answer('Введите число детей, недостигших 14 лет')
+        await callback_query.message.answer('Введите количество детей от 4 до 11 лет')
         await states.User.Entered_number_of_children.set()
 
 
@@ -194,11 +194,11 @@ async def send_form(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['number_of_adults'] = message.text
     async with state.proxy() as data:
-        await bot.send_message(message.from_user.id, "Подтвердите заявку: \n ФИО:" + data['name'] +
-                               "\n Отель:" + data['hotel'] + "\n Номер комнаты:" + data['room_number'] +
-                               "\n Номер телефона:" + data['phone_number'] +
-                               "\n Число взрослых:" + data['number_of_adults'] + "\n Число детей младше 14 лет:"
-                               + data['number_of_children'] + "\n Дата:" +
+        await bot.send_message(message.from_user.id, "Подтвердите заявку: \n ФИО: " + data['name'] +
+                               "\n Отель: " + data['hotel'] + "\n Номер комнаты: " + data['room_number'] +
+                               "\n Номер телефона: " + data['phone_number'] +
+                               "\n Число взрослых: " + data['number_of_adults'] + "\n Число детей от 4 до 11 лет: "
+                               + data['number_of_children'] + "\n Дата: " +
                                data['date'].strftime("%d.%m.%Y"),
                                reply_markup=keyboards.Sent_form_buttons)
     await states.User.Sent_form.set()
@@ -212,9 +212,10 @@ async def sent_form(message: types.Message, state: FSMContext):
                                  data['date'].strftime("%d.%m.%Y"), data['number_of_adults'],
                                  data['number_of_children'],
                                  data['phone_number'], sheet)
-    await bot.send_message(message.from_user.id, "Ваша заявка отправлена. За день до экскурсии мы попросим" +
-                           " вас подтвердить ее. В случае изменений менеджер свяжется"
-                           " с вами по указанному номеру через Telegram", reply_markup=keyboards.New_form_buttons)
+    await bot.send_message(message.from_user.id, "Ваша заявка отправлена. "
+                                                 "За день до экскурсии мы попросим вас подтвердить ее. "
+                                                 "В случае изменений менеджер свяжется с вами"
+                                                 " по указанному номеру через Telegram", reply_markup=keyboards.New_form_buttons)
     await states.User.Start_again.set()
 
 

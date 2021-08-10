@@ -26,7 +26,17 @@ async def user_agreed():
 
     for id in id_and_rows.keys():
         try:
-            await main.bot.send_message(int(id), 'У вас забронирована экскурсия на корабле. Подтвердите ее',
+            await main.bot.send_message(int(id), 'У вас забронирована экскурсия на корабле:'
+                                                 " \n ФИО: " + sheet.cell(id_and_rows[id], 3) +
+                                        "\n Отель: " + sheet.cell(id_and_rows[id],
+                                                                  4) + "\n Номер комнаты: " + sheet.cell(
+                id_and_rows[id], 5) +
+                                        "\n Номер телефона: " + sheet.cell(id_and_rows[id], 8) +
+                                        "\n Число взрослых: " + sheet.cell(id_and_rows[id],
+                                                                           6) + "\n Число детей от 4 до 11 лет: "
+                                        + sheet.cell(id_and_rows[id], 7) + "\n Дата: " +
+                                        sheet.cell(id_and_rows[id], 2),
+                                        ' Подтвердите ее',
                                         reply_markup=keyboards.Confirm_buttons)
         except:
             print("Неправильный id", id)
