@@ -227,8 +227,7 @@ async def sent_form(message: types.Message, state: FSMContext):
 async def wrong_command(message: types.Message, state: FSMContext):
     await bot.send_message(message.from_user.id,
                            "Введена неверная команда. Для ввода команд воспользуйтесь понелей кнопок. Кнопка "
-                           "переключения на панель расположена справа от поля для ввода текста.",
-                           reply_markup=keyboards.New_form_buttons)
+                           "переключения на панель расположена справа от поля для ввода текста.")
 
 
 if __name__ == '__main__':
