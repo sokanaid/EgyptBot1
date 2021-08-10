@@ -20,15 +20,19 @@ bot = Bot(config.Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 loop = asyncio.get_event_loop()
 # Промежуток времени для вызовов подтверждения экскурсий.
-delay =8.64*10**7
+delay = 8.64 * 10 ** 7
 
 
 # Начало работы приветствие
 @dp.message_handler(commands=['start'], state='*')
 async def start_message(message: types.Message, state: FSMContext):
     await bot.send_message(message.from_user.id, "Привет!")
-    await bot.send_message(message.from_user.id, "Я бот помощник по бронированию морской прогулки в красное море "
-                                                 "от команды \"Utopia Team\"",
+    await bot.send_message(message.from_user.id,
+                           "Привет," + message.from_user.first_name + ". Я бот-помощник команды \"Utopia Team\""
+                                                                      "Готов помочь тебе забронировать морскую "
+                                                                      "прогулку "
+                                                                      "по Красному морю от нашей команды. Нажимай "
+                                                                      "далее ",
                            reply_markup=keyboards.Next_step_buttons)
     await states.User.Started_chat.set()
 
@@ -36,6 +40,7 @@ async def start_message(message: types.Message, state: FSMContext):
 # Предложение заполнить данные
 @dp.message_handler(text=keyboards.New_form_button.text, state=states.User.Start_again)
 async def start_new_survey(message: types.Message, state: FSMContext):
+    await bot.send_message()
     await bot.send_message(message.from_user.id, "Для бронирования на морскую прогулку нужно"
                                                  " сделать простые шаги, мы поможем тебе в этом:"
                                                  " \n- укажите свое ФИО,"
