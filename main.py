@@ -39,7 +39,6 @@ async def start_message(message: types.Message, state: FSMContext):
 # Предложение заполнить данные
 @dp.message_handler(text=keyboards.New_form_button.text, state=states.User.Start_again)
 async def start_new_survey(message: types.Message, state: FSMContext):
-    await bot.send_message()
     await bot.send_message(message.from_user.id, "Для бронирования на морскую прогулку нужно"
                                                  " сделать простые шаги, мы поможем тебе в этом:"
                                                  " \n- укажите свое ФИО,"
@@ -223,7 +222,7 @@ async def sent_form(message: types.Message, state: FSMContext):
 
 
 # Команда не существует
-@dp.message_handler(text="*", state="*")
+@dp.message_handler(state="*")
 async def wrong_command(message: types.Message, state: FSMContext):
     await bot.send_message(message.from_user.id,
                            "Введена неверная команда. Для ввода команд воспользуйтесь понелей кнопок. Кнопка "
@@ -233,4 +232,4 @@ async def wrong_command(message: types.Message, state: FSMContext):
 if __name__ == '__main__':
     when_to_call = loop.time() + delay  # delay -- промежуток времени в секундах.
     loop.call_at(when_to_call, timer_agree.my_callback)
-    executor.start_polling(dp, skip_updates=True )
+    executor.start_polling(dp, skip_updates=True)
