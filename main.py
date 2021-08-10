@@ -234,4 +234,4 @@ async def wrong_command(message: types.Message, state: FSMContext):
 if __name__ == '__main__':
     when_to_call = loop.time() + delay  # delay -- промежуток времени в секундах.
     loop.call_at(when_to_call, timer_agree.my_callback)
-    executor.start_polling(dp, skip_updates=True)
+    executor.start_polling(dp, skip_updates=True )
