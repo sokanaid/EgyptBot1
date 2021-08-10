@@ -54,8 +54,10 @@ async def start_new_survey(message: types.Message, state: FSMContext):
 async def confirm(message: types.Message, state: FSMContext):
     if str(message.from_user.id) in timer_agree.id_and_rows:
         timer_agree.confirm_in_googlesheets(message.from_user.id, "yes")
-        await bot.send_message(message.from_user.id, "Ваша экскурсия успешно подтверждена. "
-                                                     "Наш свяжется с вами для сообщения информации о поездке",
+        await bot.send_message(message.from_user.id, "Отлично! Ваша заявка успешно подтверждена."
+
+                                                     "Наш менеджер свяжется с Вами для сообщения информации о "
+                                                     "трансфере.",
                                reply_markup=types.ReplyKeyboardRemove())
     else:
         await bot.send_message(message.from_user.id, "Не удалось подтвердить заявку."
@@ -215,7 +217,8 @@ async def sent_form(message: types.Message, state: FSMContext):
     await bot.send_message(message.from_user.id, "Ваша заявка отправлена. "
                                                  "За день до экскурсии мы попросим вас подтвердить ее. "
                                                  "В случае изменений менеджер свяжется с вами"
-                                                 " по указанному номеру через Telegram", reply_markup=keyboards.New_form_buttons)
+                                                 " по указанному номеру через Telegram",
+                           reply_markup=keyboards.New_form_buttons)
     await states.User.Start_again.set()
 
 
