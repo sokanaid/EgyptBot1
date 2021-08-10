@@ -51,7 +51,7 @@ async def start_new_survey(message: types.Message, state: FSMContext):
 
 # Подтверждение заявки на экскурсию (за день до экскурссии)
 @dp.message_handler(text=keyboards.Confirm_button1.text, state="*")
-async def confirm(message: types.Message, state: FSMContext):
+async def confirm(message: types.Message, state: FSMContext ):
     if str(message.from_user.id) in timer_agree.id_and_rows:
         timer_agree.confirm_in_googlesheets(message.from_user.id, "yes")
         await bot.send_message(message.from_user.id, "Отлично! Ваша заявка успешно подтверждена."
