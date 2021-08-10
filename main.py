@@ -20,7 +20,7 @@ bot = Bot(config.Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 loop = asyncio.get_event_loop()
 # Промежуток времени для вызовов подтверждения экскурсий.
-delay = 30.0  # 8.64*10**7
+delay =8.64*10**7
 
 
 # Начало работы приветствие
