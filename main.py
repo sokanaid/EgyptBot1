@@ -229,7 +229,6 @@ async def wrong_command(message: types.Message, state: FSMContext):
                            "Введена неверная команда. Для ввода команд воспользуйтесь понелей кнопок. Кнопка "
                            "переключения на панель расположена справа от поля для ввода текста.",
                            reply_markup=keyboards.New_form_buttons)
-    await states.User.Start_again.set()
 
 
 if __name__ == '__main__':
