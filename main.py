@@ -13,6 +13,7 @@ import states
 import google_sheets
 import checking
 import datetime
+import Languges
 
 import timer_agree
 
@@ -21,17 +22,14 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 loop = asyncio.get_event_loop()
 # Промежуток времени для вызовов подтверждения экскурсий.
 delay = 8.64 * 10 ** 7
+language = 'rus'
 
 
 # Начало работы приветствие
 @dp.message_handler(commands=['start'], state='*')
 async def start_message(message: types.Message, state: FSMContext):
     await bot.send_message(message.from_user.id,
-                           "Привет, " + message.from_user.first_name + ". Я бот-помощник команды \"Utopia Team\""
-                                                                      "Готов помочь тебе забронировать морскую "
-                                                                      "прогулку "
-                                                                      "по Красному морю от нашей команды. Нажимай "
-                                                                      "далее ",
+                           Languges.Phrases[language][0] + message.from_user.first_name + Languges.Phrases[language][1],
                            reply_markup=keyboards.Next_step_buttons)
     await states.User.Started_chat.set()
 
@@ -39,11 +37,7 @@ async def start_message(message: types.Message, state: FSMContext):
 # Предложение заполнить данные
 @dp.message_handler(text=keyboards.New_form_button.text, state=states.User.Start_again)
 async def start_new_survey(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, "Для бронирования на морскую прогулку нужно"
-                                                 " сделать простые шаги, мы поможем тебе в этом:"
-                                                 " \n- укажите свое ФИО,"
-                                                 " \n- отель, \n- номер комнаты,"
-                                                 " \n- желаемую дату поездки, \n- количество человек."
+    await bot.send_message(message.from_user.id, Languges.Phrases[language][2]
                            , reply_markup=keyboards.Enter_data_buttons)
     await states.User.Started_survey.set()
 
@@ -53,17 +47,13 @@ async def start_new_survey(message: types.Message, state: FSMContext):
 async def confirm(message: types.Message, state: FSMContext):
     if str(message.from_user.id) in timer_agree.id_and_rows:
         timer_agree.confirm_in_googlesheets(message.from_user.id, "yes")
-        await bot.send_message(message.from_user.id, "Отлично! Ваша заявка успешно подтверждена."
-
-                                                     "Наш менеджер свяжется с Вами для сообщения информации о "
-                                                     "трансфере.",
+        await bot.send_message(message.from_user.id, Languges.Phrases[language][3],
                                reply_markup=types.ReplyKeyboardRemove())
     else:
-        await bot.send_message(message.from_user.id, "Не удалось подтвердить заявку."
-                                                     " Истекло время подтверждения",
+        await bot.send_message(message.from_user.id, Languges.Phrases[language][4],
                                reply_markup=types.ReplyKeyboardRemove())
 
-    await bot.send_message(message.from_user.id, "Создайте новую заявку на экскурсию",
+    await bot.send_message(message.from_user.id, Languges.Phrases[language][5],
                            reply_markup=keyboards.New_form_buttons)
     await states.User.Start_again.set()
     # await start_new_survey(message, state)
@@ -74,24 +64,21 @@ async def confirm(message: types.Message, state: FSMContext):
 async def cancel(message: types.Message, state: FSMContext):
     if str(message.from_user.id) in timer_agree.id_and_rows:
         timer_agree.confirm_in_googlesheets(message.from_user.id, "no")
-    await bot.send_message(message.from_user.id, "Экскурсия отменена",
+    await bot.send_message(message.from_user.id, Languges.Phrases[language][6],
                            reply_markup=types.ReplyKeyboardRemove())
-    await bot.send_message(message.from_user.id, "Создайте новую заявку на экскурсию",
+    await bot.send_message(message.from_user.id, Languges.Phrases[language][7],
                            reply_markup=keyboards.New_form_buttons)
     await states.User.Start_again.set()
 
     # await start_new_survey(message, state)
 
-    # Предложение заполнить данные
+
+# Предложение заполнить данные
 
 
 @dp.message_handler(text=keyboards.Next_step_button.text, state=states.User.Started_chat)
 async def start_survey(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, "Для бронирования на морскую прогулку нужно"
-                                                 " сделать простые шаги, мы поможем тебе в этом:"
-                                                 " \n- укажите свое ФИО,"
-                                                 " \n- отель, \n- номер комнаты,"
-                                                 " \n- желаемую дату поездки, \n- количество человек."
+    await bot.send_message(message.from_user.id, Languges.Phrases[language][2]
                            , reply_markup=keyboards.Enter_data_buttons)
     await states.User.Started_survey.set()
 
@@ -101,21 +88,22 @@ async def start_survey(message: types.Message, state: FSMContext):
 
 @dp.message_handler(text=keyboards.Enter_data_button.text, state=states.User.Started_survey)
 async def send_name(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, "Введите ФИО", reply_markup=types.ReplyKeyboardRemove())
+    await bot.send_message(message.from_user.id, Languges.Phrases[language][8],
+                           reply_markup=types.ReplyKeyboardRemove())
     await states.User.Entered_name.set()
 
 
 # Предложение ввести ФИО
 @dp.message_handler(text=keyboards.Edit_form_button.text, state=states.User.Sent_form)
 async def send_name1(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, "Введите ФИО", reply_markup=types.ReplyKeyboardRemove())
+    await bot.send_message(message.from_user.id,Languges.Phrases[language][8], reply_markup=types.ReplyKeyboardRemove())
     await states.User.Entered_name.set()
 
 
 # Предложение ввести отель
 @dp.message_handler(state=states.User.Entered_name)
 async def send_hotel_name(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, "Введите название отеля", reply_markup=types.ReplyKeyboardRemove())
+    await bot.send_message(message.from_user.id, Languges.Phrases[language][9], reply_markup=types.ReplyKeyboardRemove())
     await states.User.Entered_hotel_name.set()
     async with state.proxy() as data:
         data['name'] = message.text
@@ -124,7 +112,7 @@ async def send_hotel_name(message: types.Message, state: FSMContext):
 # Предложение ввести номер комнаты
 @dp.message_handler(state=states.User.Entered_hotel_name)
 async def send_room_number(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, "Введите номер комнаты", reply_markup=types.ReplyKeyboardRemove())
+    await bot.send_message(message.from_user.id, Languges.Phrases[language][10], reply_markup=types.ReplyKeyboardRemove())
     await states.User.Entered_room_number.set()
     async with state.proxy() as data:
         data['hotel'] = message.text
@@ -133,7 +121,7 @@ async def send_room_number(message: types.Message, state: FSMContext):
 # Предложение ввести номер телефона
 @dp.message_handler(state=states.User.Entered_room_number)
 async def send_phone_number(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, "Нажмите на кнопку для ввода номера телефона."
+    await bot.send_message(message.from_user.id, Languges.Phrases[language][11]
                            , reply_markup=keyboards.Send_phone_number_buttons)
     await states.User.Entered_phone_number.set()
     async with state.proxy() as data:
@@ -147,7 +135,7 @@ async def send_date(message: types.Message, state: FSMContext):
         # print( message.contact.phone_number)
         data['phone_number'] = message.contact.phone_number
 
-    await message.answer("Введите дату экскурсии", reply_markup=types.ReplyKeyboardRemove())
+    await message.answer(Languges.Phrases[language][12], reply_markup=types.ReplyKeyboardRemove())
     await message.answer("-", reply_markup=await SimpleCalendar().start_calendar())
     await states.User.Chose_date.set()
 
