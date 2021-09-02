@@ -96,14 +96,16 @@ async def send_name(message: types.Message, state: FSMContext):
 # Предложение ввести ФИО
 @dp.message_handler(text=keyboards.Edit_form_button.text, state=states.User.Sent_form)
 async def send_name1(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id,Languges.Phrases[language][8], reply_markup=types.ReplyKeyboardRemove())
+    await bot.send_message(message.from_user.id, Languges.Phrases[language][8],
+                           reply_markup=types.ReplyKeyboardRemove())
     await states.User.Entered_name.set()
 
 
 # Предложение ввести отель
 @dp.message_handler(state=states.User.Entered_name)
 async def send_hotel_name(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, Languges.Phrases[language][9], reply_markup=types.ReplyKeyboardRemove())
+    await bot.send_message(message.from_user.id, Languges.Phrases[language][9],
+                           reply_markup=types.ReplyKeyboardRemove())
     await states.User.Entered_hotel_name.set()
     async with state.proxy() as data:
         data['name'] = message.text
@@ -112,7 +114,8 @@ async def send_hotel_name(message: types.Message, state: FSMContext):
 # Предложение ввести номер комнаты
 @dp.message_handler(state=states.User.Entered_hotel_name)
 async def send_room_number(message: types.Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, Languges.Phrases[language][10], reply_markup=types.ReplyKeyboardRemove())
+    await bot.send_message(message.from_user.id, Languges.Phrases[language][10],
+                           reply_markup=types.ReplyKeyboardRemove())
     await states.User.Entered_room_number.set()
     async with state.proxy() as data:
         data['hotel'] = message.text
@@ -146,16 +149,16 @@ async def process_simple_calendar(callback_query: CallbackQuery, callback_data: 
     selected, date = await SimpleCalendar().process_selection(callback_query, callback_data)
     if selected:
         await callback_query.message.answer(
-            f'Вы выбрали {date.strftime("%d.%m.%Y")}'
+            Languges.Phrases[language][13] + f'{date.strftime("%d.%m.%Y")}'
         )
         now = datetime.datetime.today()
         if now >= date:
-            await callback_query.message.answer('Введенная дата некорректна. Выберите другую.',
+            await callback_query.message.answer(Languges.Phrases[language][15],
                                                 reply_markup=await SimpleCalendar().start_calendar())
             return
         async with state.proxy() as data:
             data['date'] = date
-        await callback_query.message.answer('Введите количество детей от 4 до 11 лет')
+        await callback_query.message.answer(Languges.Phrases[language][14])
         await states.User.Entered_number_of_children.set()
 
 
@@ -163,12 +166,12 @@ async def process_simple_calendar(callback_query: CallbackQuery, callback_data: 
 @dp.message_handler(state=states.User.Entered_number_of_children)
 async def send_adults(message: types.Message, state: FSMContext):
     if not checking.is_number_of_people(message.text):
-        await bot.send_message(message.from_user.id, 'Введенное значение не корректно. Введите число еще раз',
+        await bot.send_message(message.from_user.id, Languges.Phrases[language][16],
                                reply_markup=types.ReplyKeyboardRemove())
         return
     async with state.proxy() as data:
         data['number_of_children'] = message.text
-    await bot.send_message(message.from_user.id, 'Введите число взрослых ',
+    await bot.send_message(message.from_user.id, Languges.Phrases[language][17],
                            reply_markup=types.ReplyKeyboardRemove())
     await states.User.Entered_number_of_adults.set()
 
