@@ -180,7 +180,7 @@ async def send_adults(message: types.Message, state: FSMContext):
 @dp.message_handler(state=states.User.Entered_number_of_adults)
 async def send_form(message: types.Message, state: FSMContext):
     if not checking.is_number_of_people(message.text):
-        await bot.send_message(message.from_user.id, 'Введенное значение не корректно. Введите число еще раз',
+        await bot.send_message(message.from_user.id, Languges.Phrases[language][20],
                                reply_markup=types.ReplyKeyboardRemove())
         return
     async with state.proxy() as data:
@@ -204,10 +204,7 @@ async def sent_form(message: types.Message, state: FSMContext):
                                  data['date'].strftime("%d.%m.%Y"), data['number_of_adults'],
                                  data['number_of_children'],
                                  data['phone_number'], sheet)
-    await bot.send_message(message.from_user.id, "Ваша заявка отправлена. "
-                                                 "За день до экскурсии мы попросим вас подтвердить ее. "
-                                                 "В случае изменений менеджер свяжется с вами"
-                                                 " по указанному номеру через Telegram",
+    await bot.send_message(message.from_user.id, Languges.Phrases[language][18],
                            reply_markup=keyboards.New_form_buttons)
     await states.User.Start_again.set()
 
@@ -216,8 +213,7 @@ async def sent_form(message: types.Message, state: FSMContext):
 @dp.message_handler(state="*")
 async def wrong_command(message: types.Message, state: FSMContext):
     await bot.send_message(message.from_user.id,
-                           "Введена неверная команда. Для ввода команд воспользуйтесь понелей кнопок. Кнопка "
-                           "переключения на панель расположена справа от поля для ввода текста.")
+                          Languges.Phrases[language][19])
 
 
 if __name__ == '__main__':
