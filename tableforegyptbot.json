@@ -1,12 +1,3 @@
 {
-  "type": "service_account",
-  "project_id": "tableforegyptbot",
-  "private_key_id": "76dbfc0d64a6277bd1e25fa628b082c74ec23cf9",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDQoGJrTp9f7eFM\nGArYNejQ0qzoUgxJM9rkFB3Z5DbOJHTlItWFXRF6VFrhyQ4CnRu/eQRxrgWc7POy\neudXijCeOFEvgiUL0j+jkvU67fSAHw6dOtDzP2K44aZiwcd0s3sUduXxlsTlPCqq\n7wCRUJusqwHoO2nyfM03FCwBdkZFQFcJUIGmCprmddk395XbVfKZsFHh0RLrBJS5\noLoBz94TSX4Nk5K7emcpKCO7WNCs7xhNl0tQLBoV1+fRfQLiHcCZiGbbfnAwr3Sj\n5c3wcLOHoavWfO5yUSzWiAXaqWdGKcnMo20qmhkrsSIQHp3wFBi0fpntFJIfGsQ+\ncK7OcBk1AgMBAAECggEALo1nQLIPypBSWlAwFUw8OeKUvhdW0fvN72BUw+LSXt/Q\nLLP/6K0agg0yJVkfdPJZN3m5xeMSshBGlbAqkIRPsnJ3HS6BdTiSRj371g00ZmVn\ntapi5zBg50fEwJskVlRZVbjtOOIPZ+Zrz+4aVpKh1h7ng0pEqxzxjsWDx0S8y+U3\nE2Gvs8HE6PaSD3bTfbZWz8v1L5xSXZisNY4dFUkw22JTC7bCkFSJSMxNctRFoB/i\nnpUJkvwgHsSY983PLnEGy6YiAfnB8ozlTxYTbWS72JPNogp9WPQjDpG90AxBgo9B\nDfJUGFlBvgzKI6urltZK4PRoJQL23QzUGUMnAIXBsQKBgQDoIEdK+MLbScQrvEvo\nJ99S/OA6IAk1W0gbP4ph9OkvMhC1X4SW28vzvH07Wq2BRUC1IO62ZnQjBnLU7ZoW\nEl/+7vgw9FkKmb/sCZUUBgyCkkoTJkGQbjMuqUD48MPbplZ1PGXg6a7ZCZaDvCfS\n5vvF5MrRA1MCMGBFX6WbxakH0QKBgQDmFWC9r85UdabzWjXX9ZOuwc1d2DAfGsDV\nHZlBCVRasXaAcRJjZZypuvOvA2Yh7mNOJW4mKY3lmZlcATeEfp2o77DDoLK+gBkH\ndEyYOe0Pbwon7p2ufbiknjyvSakogoeD5UE+x1ktKQyASe2E7d3qhDHlB1+7wgqq\nP3yCGdh4JQKBgFz9QVIpYXYTkQCsSARSpMZMA0+FseqsDLDNvZQMVrXPap4eC7Gb\nj5KuucRjSQp2QbvN25M6a9/0H2BpZsbcyZQJC2ghGuKCQT4/gHcrDSvpir8tHirL\n2rkgmKShXvTJJ+2DKpT1SFQt4RwY7iMw4T+frhgZKtG/q3FfJarHfjVhAoGBANnq\nT3j45Mvbrqb3vt1uq1QuHAsQ8erT1OVEJl2Rr4JCaEEYVtkraSjcd2ZAKuBiP03J\nZ7zfSJS4WKbqRCHKJhrWAa4XKpQBETOdM9pNqrgebBkMB+43BsVrVYCTnJJQpncG\nkDgcaNq78SokWsC25aLzV6paxJI5Iw7CGHPEdOC9AoGBALTXEHmCL4EE3bqaqE5t\nQ8/nuxkjv6RbSNP+myqFhhY+zf6y6OAd20rl3HFDJ8YhU3vc1gYiLpdvPtZK7cjf\n+LvdGjyowmfLxEk34CQuiGxLq/nR5Oc9YYQqL+nYM1BfFCWo43kTUR7fCjwo36bE\nHQm0JaYd5wnXP+NKrwD0+Nl8\n-----END PRIVATE KEY-----\n",
-  "client_email": "accountforegypttelegrambot@tableforegyptbot.iam.gserviceaccount.com",
-  "client_id": "107640334370712911919",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/accountforegypttelegrambot%40tableforegyptbot.iam.gserviceaccount.com"
+  *
 }
