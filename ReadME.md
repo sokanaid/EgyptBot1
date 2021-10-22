@@ -1,4 +1,4 @@
-<h1 align="center">Warehouse</h1>
+<h1 align="center">Telegram bot for booking tickets for boat trips</h1>
 <h2 align="center">
 
 ## Description
@@ -6,8 +6,10 @@
 
 <p align="center">
 
-This is a Windows forms application that emits warehouse work. There are 2 interfaces. The first one for the warehouse owner allows you to create a warehouse, add (or generate) categories and goods to it, track orders and change their status. The second one for buyers - allows you to add products to the cart, create orders, track their status. After working with the application, the data is serialized. The application also contains the ability to export data to a CSV file.
-
+This is a telegram that the bot records tourists on boat trips.
+The information collected during the survey is recorded in a google table.
+Also, the day before the tour, the bot asks for a confirmation from the visitor.
+  
 ## Screenshots
 Shop owner's view
 ![image](https://user-images.githubusercontent.com/71149930/138454791-6b4173a4-11d2-486e-a1e4-7fb2abb0b383.png)
