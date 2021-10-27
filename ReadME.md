@@ -6,7 +6,7 @@
 
 <p align="center">
 
-This is a telegram that the bot records tourists on boat trips.
+This is a telegram bot that records tourists on boat trips.
 The information collected during the survey is recorded in a google table.
 Also, the day before the tour, the bot asks for a confirmation from the visitor.
   
